@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "monoformat"
+version = "0.1.0b1"
+description = "A tool that formats all kinds of languages consistently"
+authors = ["Rémy Sanchez <remy.sanchez@hyperthese.net>"]
+license = "WTFPL"
+packages = [ { include = "monoformat", from = "src" } ]
+readme = "README.md"
+repository = "https://github.com/Xowap/Monoformat"
+
+[tool.poetry.scripts]
+monoformat = "monoformat.__main__:__main__"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+isort = "^5.10.1"
+black = "^22.10.0"
+node-edge = "^0.1.0b2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
