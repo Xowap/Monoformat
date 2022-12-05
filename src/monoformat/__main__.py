@@ -76,7 +76,9 @@ def main(argv: Optional[Sequence[str]] = None):
     explorer = MonoExplorer(MonoFormatter.default(), args.do_not_enter)
 
     for info in explorer.format(args.path):
-        if info.action == FormatAction.done:
+        if info.action == FormatAction.kept:
+            print(f"[ Kept      ]  {info.file_path}")
+        if info.action == FormatAction.formatted:
             print(f"[ Formatted ]  {info.file_path}")
         elif info.action == FormatAction.skip:
             print(f"[ Skipped   ]  {info.file_path}")

@@ -13,7 +13,8 @@ class FormatAction(Enum):
     Outcome of a file formatting
     """
 
-    done = "done"
+    kept = "kept"
+    formatted = "formatted"
     skip = "skip"
     error = "error"
 
@@ -77,10 +78,13 @@ class MonoExplorer:
             for path in paths:
                 for file_path in self.find_files(path):
                     try:
-                        self.formatter.format(file_path)
+                        changed = self.formatter.format(file_path)
                     except NoFormatterFound:
                         yield FormatInfo(file_path, FormatAction.skip)
                     except Exception as e:
                         yield FormatInfo(file_path, FormatAction.error, e)
                     else:
-                        yield FormatInfo(file_path, FormatAction.done)
+                        yield FormatInfo(
+                            file_path,
+                            FormatAction.formatted if changed else FormatAction.kept,
+                        )
