@@ -99,7 +99,7 @@ class PrettierFormatter(BaseFormatter):
 
         self.ne.stop()
 
-    def format(self, file_path: Path) -> None:
+    def format(self, file_path: Path) -> bool:
         """
         We use prettier to format the code
         """
@@ -122,10 +122,13 @@ class PrettierFormatter(BaseFormatter):
             },
         )
 
+        if formatted == content:
+            return False
+
         with open(file_path, "w", encoding="utf-8") as f:
             f.write(formatted)
 
-        return content != formatted
+        return True
 
 
 class MonoFormatter:
