@@ -33,6 +33,18 @@ It will take care to avoid `.git` and other special directories. There is a
 default pattern embedded but you can change it with the `--do-not-enter` flag,
 which is a pattern matching folder or file names you don't want to consider.
 
+### Without install
+
+I've actually spent an absurd amount of time to make it extremely simple to run
+Python and JS code without installing anything. You can do this with:
+
+```bash
+curl -s https://pypi.run/monoformat | python3.10 - .
+```
+
+Doing so will entirely reformat with black, isort and prettier the current
+directory.
+
 ## Supported languages
 
 Monoformat supports the following languages:
