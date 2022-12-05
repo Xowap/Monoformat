@@ -24,9 +24,11 @@ class BaseFormatter(ABC):
     """
 
     @abstractmethod
-    def format(self, file_path: Path) -> None:
+    def format(self, file_path: Path) -> bool:
         """
-        Implement this to format in place the provided file
+        Implement this to format in place the provided file.
+
+        Returns True if the file was formatted, False otherwise.
         """
 
         raise NotImplementedError
@@ -52,18 +54,21 @@ class PythonFormatter(BaseFormatter):
         We use both isort and black to format Python code
         """
 
-        sort_imports(
+        att = sort_imports(
             file_name=f"{file_path}",
             config=Config(
                 profile="black",
+                quiet=True,
             ),
         )
-        format_file_in_place(
+        changed = format_file_in_place(
             file_path,
             fast=False,
             mode=Mode(target_versions={TargetVersion.PY310}),
             write_back=WriteBack.YES,
         )
+
+        return not att.incorrectly_sorted or changed
 
 
 class PrettierFormatter(BaseFormatter):
@@ -94,7 +99,7 @@ class PrettierFormatter(BaseFormatter):
 
         self.ne.stop()
 
-    def format(self, file_path: Path) -> None:
+    def format(self, file_path: Path) -> bool:
         """
         We use prettier to format the code
         """
@@ -117,8 +122,13 @@ class PrettierFormatter(BaseFormatter):
             },
         )
 
+        if formatted == content:
+            return False
+
         with open(file_path, "w", encoding="utf-8") as f:
             f.write(formatted)
+
+        return True
 
 
 class MonoFormatter:
@@ -191,14 +201,13 @@ class MonoFormatter:
 
         self.__exit__(None, None, None)
 
-    def format(self, file_path: Path) -> None:
+    def format(self, file_path: Path) -> bool:
         """
         For a given file, finds the right formatter and attempts formatting
         """
 
         for pattern, formatter in self.formatters.items():
             if pattern.match(str(file_path)):
-                formatter.format(file_path)
-                return
+                return formatter.format(file_path)
 
         raise NoFormatterFound(f"No formatter found for {file_path}")
