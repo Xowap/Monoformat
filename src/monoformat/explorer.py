@@ -15,8 +15,8 @@ class FormatAction(Enum):
 
     kept = "kept"
     formatted = "formatted"
-    skip = "skip"
-    error = "error"
+    skipped = "skipped"
+    failed = "failed"
 
 
 @dataclass
@@ -80,9 +80,9 @@ class MonoExplorer:
                     try:
                         changed = self.formatter.format(file_path)
                     except NoFormatterFound:
-                        yield FormatInfo(file_path, FormatAction.skip)
+                        yield FormatInfo(file_path, FormatAction.skipped)
                     except Exception as e:
-                        yield FormatInfo(file_path, FormatAction.error, e)
+                        yield FormatInfo(file_path, FormatAction.failed, e)
                     else:
                         yield FormatInfo(
                             file_path,
