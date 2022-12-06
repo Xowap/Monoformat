@@ -19,6 +19,7 @@ class Args(NamedTuple):
 
     do_not_enter: Sequence[re.Pattern]
     path: Sequence[Path]
+    ignore_files: Sequence[Path]
 
 
 def parse_args(argv: Optional[Sequence[str]] = None) -> Args:
@@ -40,14 +41,31 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Args:
         type=re.compile,
         action="append",
         default=[
-            re.compile(
-                r"(\.git|\.hg|\.mypy_cache|\.nox|\.tox|\.venv|_build"
-                r"|buck-out|build|dist|node_modules|webpack_bundles"
-                r"|\.idea|\.vscode|__pycache__|\.pytest_cache|migrations)"
-            )
+            re.compile(r"^\.(git|hg|venv|idea|vscode|tox|mypy_cache)|node_modules$"),
         ],
+        help=(
+            "A regular expression defining directories that should not be "
+            "entered (defaults to .git, .hg, .venv, .idea, .vscode, .tox, "
+            ".mypy_cache, node_modules)"
+        ),
     )
-    parser.add_argument("path", type=Path, nargs="+")
+    parser.add_argument(
+        "-i",
+        "--ignore-files",
+        type=Path,
+        action="append",
+        help=(
+            "A list of files to look out for that contain ignore rules "
+            "(.gitignore, .git/info/exclude and .formatignore by default)"
+        ),
+        default=[Path(".gitignore"), Path(".git/info/exclude"), Path(".formatignore")],
+    )
+    parser.add_argument(
+        "path",
+        type=Path,
+        nargs="+",
+        help="Paths to format (directories or files)",
+    )
 
     return Args(**parser.parse_args(argv).__dict__)
 
@@ -93,7 +111,11 @@ def main(argv: Optional[Sequence[str]] = None):
     args = parse_args(argv)
     colorama.init()
 
-    explorer = MonoExplorer(MonoFormatter.default(), args.do_not_enter)
+    explorer = MonoExplorer(
+        formatter=MonoFormatter.default(),
+        do_not_enter=args.do_not_enter,
+        ignore_files=args.ignore_files,
+    )
 
     for info in explorer.format(args.path):
         if info.action == FormatAction.kept:
