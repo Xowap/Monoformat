@@ -210,7 +210,7 @@ class MonoFormatter:
             {
                 re.compile(r".*\.py$", re.IGNORECASE): PythonFormatter(**context),
                 re.compile(
-                    r".*\.([jt]sx?|json|md|vue|php|html?|svelte|ya?ml|s?css)$",
+                    r".*\.([jt]sx?|json|md|vue|php|html?|svelte|ya?ml|(s?c|le)ss)$",
                     re.IGNORECASE,
                 ): PrettierFormatter(**context),
             }
