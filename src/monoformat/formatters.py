@@ -1,7 +1,7 @@
 import re
 from abc import ABC, abstractmethod
 from pathlib import Path
-from typing import Mapping
+from typing import Any, Iterator, Mapping, MutableMapping, Optional, Sequence, Set
 
 from black import Mode, TargetVersion, WriteBack, format_file_in_place
 from isort import Config
@@ -22,6 +22,12 @@ class BaseFormatter(ABC):
     """
     Basic interface for a formatter.
     """
+
+    def __init__(self, **_):
+        """
+        Useless init, just eating up the kwargs so that the context mechanic
+        can work.
+        """
 
     @abstractmethod
     def format(self, file_path: Path) -> bool:
@@ -49,7 +55,57 @@ class PythonFormatter(BaseFormatter):
     In charge of formatting Python code
     """
 
-    def format(self, file_path: Path) -> None:
+    def __init__(self, py_src_path: Sequence[str], **_):
+        super().__init__()
+        self.py_src_path = py_src_path
+        self.source_dirs_cache: MutableMapping[Path, Set[Path]] = {}
+
+    def detect_repo_root(self, file_path: Path) -> Optional[Path]:
+        """
+        Detect the root of the repo by looking for a .git directory
+        """
+
+        path = file_path.absolute()
+
+        while not (path / ".git").is_dir():
+            path = path.parent
+            if path == path.parent:
+                return None
+
+        return path
+
+    def _find_source_dirs(self, root: Path) -> Iterator[Path]:
+        """
+        Underlying implementation of find_source_dirs that can then be cached
+        """
+
+        if not root:
+            return
+
+        for pattern in self.py_src_path:
+            if pattern == "." or pattern == "./":
+                yield root
+            else:
+                for match in root.glob(pattern):
+                    if match.is_file():
+                        yield match.parent
+                    elif match.is_dir():
+                        yield match
+
+    def find_source_dirs(self, file_path: Path) -> Set[Path]:
+        """
+        Find the source directories of the project by looking for a .git
+        directory and then looking for a src directory.
+        """
+
+        root = self.detect_repo_root(file_path)
+
+        if root not in self.source_dirs_cache:
+            self.source_dirs_cache[root] = set(self._find_source_dirs(root))
+
+        return self.source_dirs_cache[root]
+
+    def format(self, file_path: Path) -> bool:
         """
         We use both isort and black to format Python code
         """
@@ -59,6 +115,7 @@ class PythonFormatter(BaseFormatter):
             config=Config(
                 profile="black",
                 quiet=True,
+                src_paths=set(self.find_source_dirs(file_path)),
             ),
         )
         changed = format_file_in_place(
@@ -72,7 +129,8 @@ class PythonFormatter(BaseFormatter):
 
 
 class PrettierFormatter(BaseFormatter):
-    def __init__(self):
+    def __init__(self, **_):
+        super().__init__()
         self.ne = NodeEngine(
             {
                 "dependencies": {
@@ -143,17 +201,17 @@ class MonoFormatter:
         self.formatters = formatters
 
     @classmethod
-    def default(cls) -> "MonoFormatter":
+    def default(cls, context: Mapping[str, Any]) -> "MonoFormatter":
         """
         Generates a pre-configured instance
         """
 
         return cls(
             {
-                re.compile(r".*\.py$"): PythonFormatter(),
+                re.compile(r".*\.py$"): PythonFormatter(**context),
                 re.compile(
                     r".*\.([jt]sx?|json|md|vue|php|html?|svelte|ya?ml|s?css)$"
-                ): PrettierFormatter(),
+                ): PrettierFormatter(**context),
             }
         )
 

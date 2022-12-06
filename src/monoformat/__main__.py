@@ -4,6 +4,7 @@ from argparse import ArgumentParser
 from pathlib import Path
 from signal import SIGTERM, signal
 from sys import stderr
+from traceback import print_exception
 from typing import NamedTuple, Optional, Sequence
 
 import colorama
@@ -20,6 +21,8 @@ class Args(NamedTuple):
     do_not_enter: Sequence[re.Pattern]
     path: Sequence[Path]
     ignore_files: Sequence[Path]
+    py_src_path: Sequence[str]
+    print_exceptions: bool
 
 
 def parse_args(argv: Optional[Sequence[str]] = None) -> Args:
@@ -41,7 +44,9 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Args:
         type=re.compile,
         action="append",
         default=[
-            re.compile(r"^\.(git|hg|venv|idea|vscode|tox|mypy_cache)|node_modules$"),
+            re.compile(
+                r"^\.(git|hg|venv|idea|vscode|tox|mypy_cache)|node_modules|package-lock.json$"
+            ),
         ],
         help=(
             "A regular expression defining directories that should not be "
@@ -59,6 +64,31 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Args:
             "(.gitignore, .git/info/exclude and .formatignore by default)"
         ),
         default=[Path(".gitignore"), Path(".git/info/exclude"), Path(".formatignore")],
+    )
+    parser.add_argument(
+        "--py-src-path",
+        type=str,
+        help=(
+            "When sorting imports, we look for the root of a Git repo and "
+            "then we look for those glob patterns as Python source code "
+            "roots. If a file is matched, its parent directory will be chosen."
+        ),
+        action="append",
+        default=[
+            ".",
+            "*/manage.py",
+            "src",
+            "tests",
+            "test",
+            "*/src",
+            "*/tests",
+            "*/test",
+        ],
+    )
+    parser.add_argument(
+        "--print-exceptions",
+        action="store_true",
+        help="Print formatter exceptions",
     )
     parser.add_argument(
         "path",
@@ -112,7 +142,7 @@ def main(argv: Optional[Sequence[str]] = None):
     colorama.init()
 
     explorer = MonoExplorer(
-        formatter=MonoFormatter.default(),
+        formatter=MonoFormatter.default(context=dict(py_src_path=args.py_src_path)),
         do_not_enter=args.do_not_enter,
         ignore_files=args.ignore_files,
     )
@@ -144,6 +174,9 @@ def main(argv: Optional[Sequence[str]] = None):
                 info.file_path,
                 is_file_bold=True,
             )
+
+            if args.print_exceptions:
+                print_exception(info.error)
 
 
 def __main__():
