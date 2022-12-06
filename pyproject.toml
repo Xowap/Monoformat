@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "monoformat"
-version = "0.1.0b2"
+version = "0.1.0b3"
 description = "A tool that formats all kinds of languages consistently"
 authors = ["Rémy Sanchez <remy.sanchez@hyperthese.net>"]
 license = "WTFPL"
