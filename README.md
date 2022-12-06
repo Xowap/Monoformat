@@ -55,11 +55,16 @@ node_modules
 ```
 
 And then specifically to avoid formatting migrations (which can be super
-expensive), add a `.formatignore` file that looks like that:
+expensive), and to avoid running prettier on Django templates (which ends up
+badly) add a `.formatignore` file that looks like that:
 
 ```
 **/migrations/*
+**/templates/*
 ```
+
+Then you can run `monoformat .` and it will only format the files that are
+relevant to your project.
 
 ### Without install
 
