@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "monoformat"
-version = "0.1.0b2"
+version = "0.1.0b3"
 description = "A tool that formats all kinds of languages consistently"
 authors = ["Rémy Sanchez <remy.sanchez@hyperthese.net>"]
 license = "WTFPL"
@@ -17,6 +17,7 @@ isort = "^5.10.1"
 black = "^22.10.0"
 node-edge = "^0.1.0b2"
 colorama = "^0.4.6"
+pathspec = "^0.10.2"
 
 [build-system]
 requires = ["poetry-core"]
