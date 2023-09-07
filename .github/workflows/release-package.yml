@@ -1,0 +1,36 @@
+name: Release Python package
+
+on:
+    push:
+        tags:
+            - "v*"
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v3
+
+            - name: Setup Poetry
+              run: python -m pipx install poetry
+
+            - name: Setup Python
+              uses: actions/setup-python@v4
+              with:
+                  python-version: "3.11"
+                  cache: poetry
+
+            - name: Install dependencies
+              run: poetry install
+
+            - name: Build package
+              run: poetry build
+
+            - name: Configure Pypi publication
+              run: poetry config pypi-token.pypi $PYPI_TOKEN
+              env:
+                  PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
+
+            - name: Publish package
+              run: poetry publish
