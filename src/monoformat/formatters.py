@@ -101,7 +101,9 @@ class PythonFormatter(BaseFormatter):
         root = self.detect_repo_root(file_path)
 
         if root not in self.source_dirs_cache:
-            self.source_dirs_cache[root] = set(self._find_source_dirs(root))
+            found = set(self._find_source_dirs(root))
+            without_root = found - {root}
+            self.source_dirs_cache[root] = without_root or found
 
         return self.source_dirs_cache[root]
 
@@ -121,7 +123,7 @@ class PythonFormatter(BaseFormatter):
         changed = format_file_in_place(
             file_path,
             fast=False,
-            mode=Mode(target_versions={TargetVersion.PY310}),
+            mode=Mode(target_versions={TargetVersion.PY311}),
             write_back=WriteBack.YES,
         )
 
@@ -134,9 +136,9 @@ class PrettierFormatter(BaseFormatter):
         self.ne = NodeEngine(
             {
                 "dependencies": {
-                    "prettier": "^2.8.0",
-                    "@prettier/plugin-php": "^0.19.0",
-                    "prettier-plugin-svelte": "^2.7.0",
+                    "prettier": "^3.0.0",
+                    "@prettier/plugin-php": "^0.20.0",
+                    "prettier-plugin-svelte": "^3.0.0",
                 }
             }
         )
@@ -210,7 +212,7 @@ class MonoFormatter:
             {
                 re.compile(r".*\.py$", re.IGNORECASE): PythonFormatter(**context),
                 re.compile(
-                    r".*\.([jt]sx?|json|md|vue|php|html?|svelte|ya?ml|(s?c|le)ss)$",
+                    r".*\.([jt]sx?|json|md|vue|php|html?|svelte|ya?ml|(s?c|le)ss|(Doge|Flux)file)$",
                     re.IGNORECASE,
                 ): PrettierFormatter(**context),
             }

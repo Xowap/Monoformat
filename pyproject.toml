@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "monoformat"
-version = "0.1.0b3"
+version = "0.2.0"
 description = "A tool that formats all kinds of languages consistently"
 authors = ["Rémy Sanchez <remy.sanchez@hyperthese.net>"]
 license = "WTFPL"
@@ -14,10 +14,10 @@ monoformat = "monoformat.__main__:__main__"
 [tool.poetry.dependencies]
 python = "^3.10"
 isort = "^5.10.1"
-black = "^22.10.0"
+black = "23.x"
 node-edge = "^0.1.0b2"
 colorama = "^0.4.6"
-pathspec = "^0.10.2"
+pathspec = "^0.11.0"
 
 [build-system]
 requires = ["poetry-core"]
