@@ -134,9 +134,9 @@ class PrettierFormatter(BaseFormatter):
         self.ne = NodeEngine(
             {
                 "dependencies": {
-                    "prettier": "^2.8.0",
-                    "@prettier/plugin-php": "^0.19.0",
-                    "prettier-plugin-svelte": "^2.7.0",
+                    "prettier": "^3.0.0",
+                    "@prettier/plugin-php": "^0.20.0",
+                    "prettier-plugin-svelte": "^3.0.0",
                 }
             }
         )
