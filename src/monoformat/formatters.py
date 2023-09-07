@@ -121,7 +121,7 @@ class PythonFormatter(BaseFormatter):
         changed = format_file_in_place(
             file_path,
             fast=False,
-            mode=Mode(target_versions={TargetVersion.PY310}),
+            mode=Mode(target_versions={TargetVersion.PY311}),
             write_back=WriteBack.YES,
         )
 
@@ -210,7 +210,7 @@ class MonoFormatter:
             {
                 re.compile(r".*\.py$", re.IGNORECASE): PythonFormatter(**context),
                 re.compile(
-                    r".*\.([jt]sx?|json|md|vue|php|html?|svelte|ya?ml|(s?c|le)ss)$",
+                    r".*\.([jt]sx?|json|md|vue|php|html?|svelte|ya?ml|(s?c|le)ss|(Doge|Flux)file)$",
                     re.IGNORECASE,
                 ): PrettierFormatter(**context),
             }
