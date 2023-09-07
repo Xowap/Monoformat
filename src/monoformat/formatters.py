@@ -101,7 +101,9 @@ class PythonFormatter(BaseFormatter):
         root = self.detect_repo_root(file_path)
 
         if root not in self.source_dirs_cache:
-            self.source_dirs_cache[root] = set(self._find_source_dirs(root))
+            found = set(self._find_source_dirs(root))
+            without_root = found - {root}
+            self.source_dirs_cache[root] = without_root or found
 
         return self.source_dirs_cache[root]
 
