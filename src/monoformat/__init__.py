@@ -2,4 +2,5 @@ from .exceptions import *
 from .explorer import FormatAction, MonoExplorer
 from .formatters import MonoFormatter
 
-__version__ = __import__("pkg_resources").get_distribution("monoformat").version
+from importlib.metadata import version as _version
+__version__ = _version("monoformat")

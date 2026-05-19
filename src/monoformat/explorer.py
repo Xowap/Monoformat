@@ -2,7 +2,7 @@ import re
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
-from typing import Iterator, Optional, Sequence
+from collections.abc import Iterator, Sequence
 
 from pathspec import pathspec
 
@@ -29,7 +29,7 @@ class FormatInfo:
 
     file_path: Path
     action: FormatAction
-    error: Optional[Exception] = None
+    error: Exception | None = None
 
 
 class GitIgnore:

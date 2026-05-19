@@ -5,7 +5,8 @@ from pathlib import Path
 from signal import SIGTERM, signal
 from sys import stderr
 from traceback import print_exception
-from typing import NamedTuple, Optional, Sequence
+from collections.abc import Sequence
+from typing import NamedTuple
 
 import colorama
 
@@ -25,7 +26,7 @@ class Args(NamedTuple):
     print_exceptions: bool
 
 
-def parse_args(argv: Optional[Sequence[str]] = None) -> Args:
+def parse_args(argv: Sequence[str] | None = None) -> Args:
     """
     Parse command line arguments
 
@@ -125,7 +126,7 @@ def print_action(
     )
 
 
-def main(argv: Optional[Sequence[str]] = None):
+def main(argv: Sequence[str] | None = None):
     """
     Main entry point. This is the function that will be called when you run
     monoformat from the command line. You can also call it from your own

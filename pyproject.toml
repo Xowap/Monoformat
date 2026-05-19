@@ -12,12 +12,12 @@ repository = "https://github.com/Xowap/Monoformat"
 monoformat = "monoformat.__main__:__main__"
 
 [tool.poetry.dependencies]
-python = "^3.10"
-isort = "^5.10.1"
-black = "23.x"
+python = "~3.14"
+isort = "^8.0.1"
+black = "^26.5.1"
 node-edge = "^0.1.0b2"
 colorama = "^0.4.6"
-pathspec = "^0.11.0"
+pathspec = "^1.1.1"
 
 [build-system]
 requires = ["poetry-core"]

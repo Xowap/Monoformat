@@ -1,7 +1,8 @@
 import re
 from abc import ABC, abstractmethod
 from pathlib import Path
-from typing import Any, Iterator, Mapping, MutableMapping, Optional, Sequence, Set
+from collections.abc import Iterator, Mapping, MutableMapping, Sequence
+from typing import Any
 
 from black import Mode, TargetVersion, WriteBack, format_file_in_place
 from isort import Config
@@ -58,9 +59,9 @@ class PythonFormatter(BaseFormatter):
     def __init__(self, py_src_path: Sequence[str], **_):
         super().__init__()
         self.py_src_path = py_src_path
-        self.source_dirs_cache: MutableMapping[Path, Set[Path]] = {}
+        self.source_dirs_cache: MutableMapping[Path, set[Path]] = {}
 
-    def detect_repo_root(self, file_path: Path) -> Optional[Path]:
+    def detect_repo_root(self, file_path: Path) -> Path | None:
         """
         Detect the root of the repo by looking for a .git directory
         """
@@ -92,7 +93,7 @@ class PythonFormatter(BaseFormatter):
                     elif match.is_dir():
                         yield match
 
-    def find_source_dirs(self, file_path: Path) -> Set[Path]:
+    def find_source_dirs(self, file_path: Path) -> set[Path]:
         """
         Find the source directories of the project by looking for a .git
         directory and then looking for a src directory.
