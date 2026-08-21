@@ -14,3 +14,6 @@ celerybeat-schedule.*
 .vscode
 *.sqlite3
 /doc/build/
+
+# uv
+.venv/

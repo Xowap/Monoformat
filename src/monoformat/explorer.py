@@ -1,12 +1,14 @@
+"""Directory exploration honoring ignore files."""
+
 import re
+from collections.abc import Iterator, Sequence
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
-from typing import Iterator, Optional, Sequence
 
 from pathspec import pathspec
 
-from .exceptions import *
+from .exceptions import NoFormatterFound
 from .formatters import MonoFormatter
 
 
@@ -29,7 +31,7 @@ class FormatInfo:
 
     file_path: Path
     action: FormatAction
-    error: Optional[Exception] = None
+    error: Exception | None = None
 
 
 class GitIgnore:
@@ -48,8 +50,8 @@ class GitIgnore:
         self.path = path
         self.root = root
 
-        with open(path) as f:
-            self.spec = pathspec.PathSpec.from_lines("gitwildmatch", f)
+        with path.open() as f:
+            self.spec = pathspec.PathSpec.from_lines("gitignore", f)
 
     def should_ignore(self, path: Path) -> bool:
         """

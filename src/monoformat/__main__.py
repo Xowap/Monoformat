@@ -1,11 +1,13 @@
-#!/usr/bin/env python3
+"""Command line interface of monoformat."""
+
 import re
 from argparse import ArgumentParser
+from collections.abc import Sequence
 from pathlib import Path
 from signal import SIGTERM, signal
 from sys import stderr
 from traceback import print_exception
-from typing import NamedTuple, Optional, Sequence
+from typing import NamedTuple
 
 import colorama
 
@@ -25,7 +27,7 @@ class Args(NamedTuple):
     print_exceptions: bool
 
 
-def parse_args(argv: Optional[Sequence[str]] = None) -> Args:
+def parse_args(argv: Sequence[str] | None = None) -> Args:
     """
     Parse command line arguments
 
@@ -45,13 +47,14 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Args:
         action="append",
         default=[
             re.compile(
-                r"^\.(git|hg|venv|idea|vscode|tox|mypy_cache)|node_modules|package-lock.json$"
+                r"^\.(git|hg|venv|idea|vscode|tox|mypy_cache|ruff_cache|pytest_cache)$"
+                r"|^(node_modules|package-lock\.json|uv\.lock)$"
             ),
         ],
         help=(
             "A regular expression defining directories that should not be "
             "entered (defaults to .git, .hg, .venv, .idea, .vscode, .tox, "
-            ".mypy_cache, node_modules)"
+            ".mypy_cache, .ruff_cache, .pytest_cache, node_modules)"
         ),
     )
     parser.add_argument(
@@ -119,13 +122,13 @@ def print_action(
     Print a formatted action line
     """
 
-    print(
-        f"[ {color}{action:<{action_width}}{colorama.Style.RESET_ALL} ]  "
-        f"{colorama.Style.BRIGHT if is_file_bold else ''}{file}{colorama.Style.RESET_ALL}"
-    )
+    bold = colorama.Style.BRIGHT if is_file_bold else ""
+    reset = colorama.Style.RESET_ALL
+
+    print(f"[ {color}{action:<{action_width}}{reset} ]  {bold}{file}{reset}")
 
 
-def main(argv: Optional[Sequence[str]] = None):
+def main(argv: Sequence[str] | None = None):
     """
     Main entry point. This is the function that will be called when you run
     monoformat from the command line. You can also call it from your own

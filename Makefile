@@ -1,5 +1,17 @@
+.PHONY: format lint typecheck test check_release release
+
 format:
-	poetry run python -m monoformat .
+	uv run python -m monoformat .
+
+lint: typecheck
+	uv run ruff check .
+	uv run ruff format --check .
+
+typecheck:
+	uv run mypy
+
+test:
+	uv run pytest tests
 
 check_release:
 ifndef VERSION

@@ -1,11 +1,11 @@
 # Monoformat
 
-Opinionated and "zero config" formatters like Black and Prettier are amazing in
+Opinionated and "zero config" formatters like Ruff and Prettier are amazing in
 the sense that they remove any need for thinking about formatting. However, they
 still require you to:
 
--   Be used separately (one is Python and the other is Node)
--   Be configured for the language version and so forth
+- Be used separately (one is Python and the other is Node)
+- Be configured for the language version and so forth
 
 Monoformat does this automatically. You can only use the language version that
 monoformat allows and you can configure literally nothing except which files
@@ -72,25 +72,36 @@ I've actually spent an absurd amount of time to make it extremely simple to run
 Python and JS code without installing anything. You can do this with:
 
 ```bash
-curl -s https://pypi.run/monoformat | python3.10 - .
+curl -s https://pypi.run/monoformat | python3 - .
 ```
 
-Doing so will entirely reformat with black, isort and prettier the current
+Doing so will entirely reformat with Ruff, oxfmt and Prettier the current
 directory.
 
 ## Supported languages
 
 Monoformat supports the following languages:
 
--   **Python** 3.10 (Black)
--   **JavaScript** (Prettier)
--   **TypeScript** (Prettier)
--   **JSON** (Prettier)
--   **Markdown** (Prettier)
--   **YAML** (Prettier)
--   **HTML** (Prettier)
--   **CSS** (Prettier)
--   **SCSS** (Prettier)
--   **Vue** (Prettier)
--   **Svelte** (Prettier)
--   **PHP** (Prettier)
+- **Python** (Ruff, both import sorting and Black-style formatting)
+- **JavaScript** (oxfmt)
+- **TypeScript** (oxfmt)
+- **JSON** (Prettier)
+- **Markdown** (Prettier)
+- **YAML** (Prettier)
+- **HTML** (Prettier)
+- **CSS** (Prettier)
+- **SCSS** (Prettier)
+- **Less** (Prettier)
+- **Vue** (Prettier)
+- **Svelte** (Prettier)
+- **MJML** (Prettier)
+- **PHP** (Prettier)
+
+JavaScript and TypeScript run through [oxfmt](https://oxc.rs), which is
+Prettier-compatible in style but dramatically faster. Everything that runs
+through Prettier or oxfmt requires Node to be available. If you don't have a
+system-wide Node installation, you can get one bundled as a Python wheel:
+
+```bash
+pip install monoformat[node]
+```

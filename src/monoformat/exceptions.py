@@ -1,7 +1,9 @@
+"""Exceptions raised by monoformat."""
+
 __all__ = [
     "MonoFormatError",
-    "StopError",
     "NoFormatterFound",
+    "StopError",
 ]
 
 
